@@ -9,13 +9,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <include
-            android:id="@+id/title"
-            layout="@layout/activity_header"
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/header_height"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:layout_height="50dp"
+            android:background="@color/colorPrimary"
+            android:elevation="4dp" />
 
         <EditText
             android:id="@+id/todo_title"
@@ -25,7 +24,7 @@
             android:inputType="text"
             android:padding="@dimen/form_padding"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/title" />
+            app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
         <Button
             android:id="@+id/pick_date"
