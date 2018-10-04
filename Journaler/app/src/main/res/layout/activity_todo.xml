@@ -18,6 +18,7 @@
 
         <EditText
             android:id="@+id/todo_title"
+            style="@style/edit_text_transparent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/title"
@@ -28,6 +29,7 @@
 
         <Button
             android:id="@+id/pick_date"
+            style="@style/simple_button_green"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/pick_a_date"
@@ -36,15 +38,16 @@
 
         <Button
             android:id="@+id/pick_time"
+            style="@style/simple_button_green"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/pick_time"
             app:layout_constraintEnd_toEndOf="parent"
-
             app:layout_constraintTop_toTopOf="@id/pick_date" />
 
         <EditText
             android:id="@+id/todo_content"
+            style="@style/edit_text_gery_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="top"

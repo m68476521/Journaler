@@ -6,6 +6,7 @@
 
     <Button
         android:id="@+id/drawer_item"
+        style="@style/simple_button_grey"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 </LinearLayout>
