@@ -5,6 +5,7 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
+import android.support.v4.content.ContextCompat
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -61,6 +62,7 @@ class ItemsFragment : BaseFragment() {
         data.putString(TodoActivity.EXTRA_TIME, timeFormat.format(date))
         intent.putExtras(data)
         startActivityForResult(intent, TODO_REQUEST)
+        val color = ContextCompat.getColor(context!!, R.color.vermilion_dark)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
