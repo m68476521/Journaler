@@ -1,5 +1,6 @@
 package com.m68476521.mike.journaler
 
+import android.app.Activity
 import android.content.Context
 import android.graphics.Typeface
 import android.os.Bundle
@@ -8,6 +9,8 @@ import android.util.Log
 import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
@@ -69,6 +72,7 @@ abstract class BaseActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
         setContentView(getLayout())
         setSupportActionBar(toolbar)
         Log.v(tag, "[ ON CREATE ]")
@@ -98,6 +102,8 @@ abstract class BaseActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         Log.v(tag, "[ ON RESUME ]")
+        val animation = getAnimation(R.anim.top_to_bottom)
+//        findViewById(R.id.toolbar).startAnimation(animation)
     }
 
     override fun onPostResume() {
@@ -108,6 +114,8 @@ abstract class BaseActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         Log.v(tag, "[ ON PAUSE]")
+        val animation = getAnimation(R.anim.hide_to_top)
+//        findViewById(R.id.toolbar).startAnimation(animation)
     }
 
     override fun onStop() {
@@ -127,6 +135,7 @@ abstract class BaseActivity : AppCompatActivity() {
 //        applyFonts(rootView, this)
         Log.v(tag, "Applying fonts [ END ]")
     }
+
     private fun initFonts() {
         if (fontExoBold == null) {
             Log.v(tag, "Initializing font [ Exo2-Bold ]")
@@ -137,5 +146,8 @@ abstract class BaseActivity : AppCompatActivity() {
             fontExoRegular = Typeface.createFromAsset(assets, "fonts/Exo2-Regular.ttf")
         }
     }
+
+    fun Activity.getAnimation(animation: Int):
+            Animation = AnimationUtils.loadAnimation(this, animation)
 }
 
