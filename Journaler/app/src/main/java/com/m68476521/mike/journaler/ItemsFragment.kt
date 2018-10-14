@@ -1,5 +1,7 @@
 package com.m68476521.mike.journaler
 
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
@@ -10,9 +12,12 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AccelerateInterpolator
+import android.view.animation.AnimationSet
 import android.view.animation.BounceInterpolator
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.reflect.jvm.internal.impl.load.kotlin.JvmType
 
 class ItemsFragment : BaseFragment() {
     private val TODO_REQUEST = 1
@@ -88,11 +93,23 @@ class ItemsFragment : BaseFragment() {
     }
 
     private fun animate(button: FloatingActionButton, expand: Boolean = true) {
-        button.animate()
-                .setInterpolator(BounceInterpolator())
-                .scaleX(if(expand) { 1.5f } else { 1.0f})
-                .scaleY(if(expand) { 1.5f } else { 1.0f})
-                .setDuration(2000)
-                .start()
+       val animation1 = ObjectAnimator.ofFloat(button, "scaleX",
+               if (expand) { 1.5f} else { 1.0f})
+        animation1.duration = 2000
+        animation1.interpolator = BounceInterpolator()
+
+        val animation2 = ObjectAnimator.ofFloat(button, "scaleY",
+                if (expand) { 1.5f} else { 1.0f})
+        animation2.duration = 2000
+        animation2.interpolator = BounceInterpolator()
+
+        val animation3 = ObjectAnimator.ofFloat(button, "alpha",
+                if (expand) { 0.3f} else { 1.0f })
+        animation3.duration = 500
+        animation3.interpolator = AccelerateInterpolator()
+
+        val set = AnimatorSet()
+        set.play(animation1).with(animation2).before(animation3)
+        set.start()
     }
 }
