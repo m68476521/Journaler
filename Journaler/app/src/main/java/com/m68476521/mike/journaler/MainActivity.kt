@@ -49,8 +49,8 @@ class MainActivity : BaseActivity() {
         menuItems.add(next7Days)
         menuItems.add(todos)
         menuItems.add(notes)
-        val navgationDraweAdapter = NavigationDrawerAdapter(this, menuItems)
-        left_drawer.adapter = navgationDraweAdapter
+        val navigationDrawerAdapter = NavigationDrawerAdapter(this, menuItems)
+        left_drawer.adapter = navigationDrawerAdapter
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

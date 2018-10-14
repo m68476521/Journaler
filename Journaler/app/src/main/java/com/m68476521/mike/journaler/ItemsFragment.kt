@@ -10,6 +10,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.BounceInterpolator
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -24,6 +25,7 @@ class ItemsFragment : BaseFragment() {
         val button = view?.findViewById<FloatingActionButton>(R.id.new_item)
 
         button?.setOnClickListener {
+            animate(button)
             val items = arrayOf(
                     getString(R.string.todos),
                     getString(R.string.notes)
@@ -31,6 +33,8 @@ class ItemsFragment : BaseFragment() {
 
             val builder = AlertDialog.Builder(this@ItemsFragment.context)
                     .setTitle(R.string.choose_a_type)
+                    .setCancelable(true)
+                    .setOnCancelListener { animate(button, false) }
                     .setItems(items) { _, which ->
                         when (which) {
                             0 -> openCreateNote()
@@ -81,5 +85,14 @@ class ItemsFragment : BaseFragment() {
                     Log.w(logTag, "Didn't created new NOTE")
             }
         }
+    }
+
+    private fun animate(button: FloatingActionButton, expand: Boolean = true) {
+        button.animate()
+                .setInterpolator(BounceInterpolator())
+                .scaleX(if(expand) { 1.5f } else { 1.0f})
+                .scaleY(if(expand) { 1.5f } else { 1.0f})
+                .setDuration(2000)
+                .start()
     }
 }
