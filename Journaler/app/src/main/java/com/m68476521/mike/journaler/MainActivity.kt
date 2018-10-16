@@ -1,5 +1,7 @@
 package com.m68476521.mike.journaler
 
+import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
@@ -17,9 +19,15 @@ class MainActivity : BaseActivity() {
     override fun getActivityTitle() = R.string.app_name
     override fun getLayout() = R.layout.activity_main
 
+    companion object {
+        @SuppressLint("StaticFieldLeak")
+        var ctx: Context? = null
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         pager.adapter = ViewPagerAdapter(supportFragmentManager)
+        ctx = applicationContext
         val menuItems = mutableListOf<NavigationDrawerItem>()
         val today = NavigationDrawerItem(
                 getString(R.string.today),
