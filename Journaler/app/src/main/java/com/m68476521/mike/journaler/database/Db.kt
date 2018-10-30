@@ -217,6 +217,4 @@ object Db: Crud<DbModel> {
         db.close()
         throw IllegalArgumentException("Unsupported entry type: $clazz")
     }
-
-
 }
