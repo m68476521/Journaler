@@ -3,9 +3,12 @@ package com.m68476521.mike.journaler.database
 import android.content.ContentValues
 import android.location.Location
 import android.util.Log
+import com.m68476521.mike.journaler.model.Entry
+import com.m68476521.mike.journaler.model.Note
+import com.m68476521.mike.journaler.model.Todo
 import kotlin.reflect.KClass
 
-object Db: Crud<DbModel> {
+object Db : Crud<DbModel> {
     private val tag = "Db"
     private val version = 1
     private val name = "studends"
@@ -18,21 +21,21 @@ object Db: Crud<DbModel> {
         val db = DbHelper(name, version).writableDatabase
         db.beginTransaction()
         var inserted = 0
-        what.forEach {item ->
-            when(item) {
+        what.forEach { item ->
+            when (item) {
                 is Entry -> {
-                    val table = String
+                    var table: String
                     val values = ContentValues()
                     values.put(DbHelper.COLUMN_TITLE, item.title)
                     values.put(DbHelper.COLUMN_MESSAGE, item.message)
                     values.put(DbHelper.COLUMN_LOCATION_LATITUDE, item.location.latitude)
-                    when(item) {
+                    when (item) {
                         is Note -> {
                             table = DbHelper.TABLE_NOTES
                         }
                         is Todo -> {
                             table = DbHelper.TABLE_TODOS
-                            values.put(DbHelper.COLUMN_SCHEDULED, item.scheduler)
+                            values.put(DbHelper.COLUMN_SCHEDULED, item.scheduledFor)
                         }
                         else -> throw IllegalArgumentException("unsupported entry type $")
                     }
@@ -63,9 +66,8 @@ object Db: Crud<DbModel> {
         val db = DbHelper(name, version).writableDatabase
         db.beginTransaction()
         var update = 0
-        what.forEach {
-            item ->
-            when(item) {
+        what.forEach { item ->
+            when (item) {
                 is Entry -> {
                     val table: String
                     val values = ContentValues()
@@ -75,8 +77,9 @@ object Db: Crud<DbModel> {
                     values.put(DbHelper.COLUMN_LOCATION_LONGITUDE, item.location.longitude)
                     when (item) {
                         is Note -> table = DbHelper.TABLE_NOTES
-                        is Todo -> { table = DbHelper.TABLE_TODOS
-                            values.put(DbHelper.COLUMN_SCHEDULED, item.scheduler)
+                        is Todo -> {
+                            table = DbHelper.TABLE_TODOS
+                            values.put(DbHelper.COLUMN_SCHEDULED, item.scheduledFor)
                         }
                         else -> throw IllegalArgumentException("Unsupported entry type: $item")
                     }
@@ -103,10 +106,9 @@ object Db: Crud<DbModel> {
         val db = DbHelper(name, version).writableDatabase
         db.beginTransaction()
         val ids = StringBuilder()
-        what.forEachIndexed {
-            index, item ->
+        what.forEachIndexed { index, item ->
             ids.append(item.id.toString())
-            if (index < what.size -1) {
+            if (index < what.size - 1) {
                 ids.append(", ")
             }
         }
@@ -114,7 +116,7 @@ object Db: Crud<DbModel> {
         val item = what.first()
         when (item) {
             is Entry -> {
-                when(item) {
+                when (item) {
                     is Note -> {
                         table = DbHelper.TABLE_NOTES
                     }
@@ -147,10 +149,9 @@ object Db: Crud<DbModel> {
         val db = DbHelper(name, version).writableDatabase
         val selection = StringBuilder()
         val selectionArgs = mutableListOf<String>()
-        args.forEach {
-            args ->
-                selection.append("${args.first} == ?")
-                selectionArgs.add(args.second)
+        args.forEach { args ->
+            selection.append("${args.first} == ?")
+            selectionArgs.add(args.second)
         }
         if (clazz.simpleName == Note::class.simpleName) {
             val result = mutableListOf<DbModel>()
