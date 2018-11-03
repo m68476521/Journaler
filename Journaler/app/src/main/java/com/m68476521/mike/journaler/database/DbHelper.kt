@@ -50,5 +50,4 @@ class DbHelper(val dbname: String, var version: Int) : SQLiteOpenHelper(MainActi
     override fun onUpgrade(db: SQLiteDatabase, p1: Int, p2: Int) {
 
     }
-
 }
