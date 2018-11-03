@@ -7,15 +7,19 @@ import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentStatePagerAdapter
 import android.support.v4.view.GravityCompat
+import android.support.v4.view.ViewPager
 import android.util.Log
 import android.view.MenuItem
 import com.m68476521.mike.journaler.navigation.NavigationDrawerAdapter
 import com.m68476521.mike.journaler.navigation.NavigationDrawerItem
+import com.m68476521.mike.journaler.preferences.PreferencesConfiguration
+import com.m68476521.mike.journaler.preferences.PreferencesProvider
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : BaseActivity() {
-    override val tag = "Main activity"
+    private val keyPagePosition = "keyPagePosition"
 
+    override val tag = "Main activity"
     override fun getActivityTitle() = R.string.app_name
     override fun getLayout() = R.layout.activity_main
 
@@ -26,7 +30,27 @@ class MainActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val provider = PreferencesProvider()
+        val config = PreferencesConfiguration("journaler_prefs", Context.MODE_PRIVATE)
+        val preferences = provider.obtain(config, this)
         pager.adapter = ViewPagerAdapter(supportFragmentManager)
+        pager.addOnPageChangeListener(object: ViewPager.OnPageChangeListener {
+            override fun onPageScrollStateChanged(state: Int) {
+
+            }
+
+            override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
+
+            }
+
+            override fun onPageSelected(position: Int) {
+                Log.v(tag, "Page [ $position ] ")
+                preferences.edit().putInt(keyPagePosition, position).apply()
+            }
+        })
+
+        val pagerPosition = preferences.getInt(keyPagePosition, 0)
+        pager.setCurrentItem(pagerPosition, true)
         ctx = applicationContext
         val menuItems = mutableListOf<NavigationDrawerItem>()
         val today = NavigationDrawerItem(
