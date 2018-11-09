@@ -1,15 +1,14 @@
 package com.m68476521.mike.journaler
 
-import android.annotation.SuppressLint
 import android.location.Location
 import android.location.LocationListener
-import android.os.AsyncTask
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextUtils
 import android.text.TextWatcher
 import android.util.Log
 import com.m68476521.mike.journaler.database.Db
+import com.m68476521.mike.journaler.execution.TaskExecutor
 import com.m68476521.mike.journaler.location.LocationProvider
 import com.m68476521.mike.journaler.model.Note
 import kotlinx.android.synthetic.main.activity_note.*
@@ -21,6 +20,7 @@ class NoteActivity : ItemActivity() {
     override fun getActivityTitle() = R.string.app_name
     override val tag = "Note activity"
     override fun getLayout() = R.layout.activity_note
+    private val executor = TaskExecutor.getInstance(1)
 
     private var textWatcher = object : TextWatcher {
         override fun afterTextChanged(p0: Editable?) {
@@ -39,29 +39,18 @@ class NoteActivity : ItemActivity() {
                 val title = getNoteTitle()
                 val content = getNoteContent()
                 note = Note(title, content, p0)
-                val task = @SuppressLint("StaticFieldLeak")
-                object : AsyncTask<Note, Void, Boolean>() {
-                    override fun doInBackground(vararg params: Note?): Boolean {
-                        if (!params.isEmpty()) {
-                            val param = params[0]
-                            param?.let {
-                                return Db.insert(param)
-                            }
-                        }
-                        return false
+                executor.execute {
+                    val param = note
+                    var result = false
+                    param?.let {
+                        result = Db.insert(param)
                     }
-
-                    override fun onPostExecute(result: Boolean) {
-                        result?.let {
-                            if (result) {
-                                Log.i(tag, "note inserted")
-                            } else {
-                                Log.e(tag, "note not inserted")
-                            }
-                        }
+                    if (result) {
+                        Log.i(tag, "note inserted")
+                    } else {
+                        Log.e(tag, "note not inserted")
                     }
                 }
-                task.execute(note)
             }
         }
 
@@ -89,29 +78,18 @@ class NoteActivity : ItemActivity() {
         } else {
             note?.title = getNoteTitle()
             note?.message = getNoteContent()
-            val task = @SuppressLint("StaticFieldLeak")
-            object : AsyncTask<Note, Void, Boolean>() {
-                override fun doInBackground(vararg p0: Note?): Boolean {
-                    if (!p0.isEmpty()) {
-                        val param = p0[0]
-                        param?.let {
-                            return Db.update(param)
-                        }
-                    }
-                    return false
+            executor.execute {
+                val param = note
+                var result = true
+                param?.let {
+                    result = Db.update(param)
                 }
-
-                override fun onPostExecute(result: Boolean?) {
-                    result?.let {
-                        if (result) {
-                            Log.i(tag, "note update")
-                        } else {
-                            Log.e(tag, "note not update")
-                        }
-                    }
+                if (result) {
+                    Log.i(tag, "Note updated.")
+                } else {
+                    Log.e(tag, "Note not updated.")
                 }
             }
-            task.execute(note)
         }
     }
 
