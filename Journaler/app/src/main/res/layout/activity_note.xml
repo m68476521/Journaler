@@ -17,6 +17,15 @@
             android:background="@color/colorPrimary"
             android:elevation="4dp" />
 
+        <View
+            android:id="@+id/indicator"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_margin="10dp"
+            android:background="@android:color/darker_gray" />
+
         <EditText
             android:id="@+id/note_title"
             style="@style/edit_text_transparent"
