@@ -21,7 +21,7 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_margin="10dp"
-            android:background="@android:color/darker_gray" />
+            android:background="@android:color/holo_blue_bright" />
 
         <EditText
             android:id="@+id/todo_title"
