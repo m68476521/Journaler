@@ -2,10 +2,7 @@ package com.m68476521.mike.journaler
 
 import android.location.Location
 import android.location.LocationListener
-import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.os.Message
+import android.os.*
 import android.support.v4.content.ContextCompat
 import android.text.Editable
 import android.text.TextUtils
@@ -16,6 +13,9 @@ import com.m68476521.mike.journaler.execution.TaskExecutor
 import com.m68476521.mike.journaler.location.LocationProvider
 import com.m68476521.mike.journaler.model.Note
 import kotlinx.android.synthetic.main.activity_note.*
+import java.util.concurrent.LinkedBlockingQueue
+import java.util.concurrent.ThreadPoolExecutor
+import java.util.concurrent.TimeUnit
 
 class NoteActivity : ItemActivity() {
     private var note: Note? = null
@@ -27,13 +27,52 @@ class NoteActivity : ItemActivity() {
     private val executor = TaskExecutor.getInstance(1)
     private var handler: Handler? = null
 
+    private val threadPoolExecutor = ThreadPoolExecutor(
+            3, 3, 1, TimeUnit.SECONDS, LinkedBlockingQueue<Runnable>()
+    )
+
+    private class TryAsync(val identifier: String) : AsyncTask<Unit, Int, Unit>() {
+        private val tag = "TryAsync"
+        override fun onPreExecute() {
+            Log.i(tag, "onPreExecute [ $identifier ]")
+            super.onPreExecute()
+        }
+
+        override fun doInBackground(vararg p0: Unit?): Unit {
+            Log.i(tag, "doInBackGround [ $identifier ] [ start ]")
+            Thread.sleep(5000)
+            Log.i(tag, "doInBackGround [ $identifier] [ end ]")
+            return Unit
+        }
+
+        override fun onCancelled(result: Unit?) {
+            Log.i(tag, " onCancelled [ $identifier] [ END ]")
+            super.onCancelled(result)
+        }
+
+        override fun onProgressUpdate(vararg values: Int?) {
+            val progression = values.first()
+            progression?.let {
+                Log.i(tag, "onProgressUpdate [ $identifier ] [ $progression ]")
+            }
+            super.onProgressUpdate(*values)
+        }
+
+        override fun onPostExecute(result: Unit?) {
+            Log.i(tag, "onPostExecute [ $identifier ]")
+            super.onPostExecute(result)
+        }
+    }
+
     private var textWatcher = object : TextWatcher {
         override fun afterTextChanged(p0: Editable?) {
             updateNote()
         }
 
         override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-        override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+        override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            p0?.let { tryAsync(p0.toString()) }
+        }
     }
 
     private val locationListener = object : LocationListener {
@@ -83,7 +122,7 @@ class NoteActivity : ItemActivity() {
                     if (msg.arg1 > 0) {
                         color = R.color.green
                     }
-                    indicator.setBackgroundColor(ContextCompat.getColor(this@NoteActivity,color))
+                    indicator.setBackgroundColor(ContextCompat.getColor(this@NoteActivity, color))
                 }
                 super.handleMessage(msg)
             }
@@ -127,5 +166,10 @@ class NoteActivity : ItemActivity() {
         else
             msg?.arg1 = 0
         handler?.sendMessage(msg)
+    }
+
+    fun tryAsync(identifier: String) {
+        val tryAsync = TryAsync(identifier)
+        tryAsync.executeOnExecutor(threadPoolExecutor)
     }
 }
