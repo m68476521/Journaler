@@ -13,11 +13,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateInterpolator
-import android.view.animation.AnimationSet
 import android.view.animation.BounceInterpolator
+import android.widget.ListView
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.reflect.jvm.internal.impl.load.kotlin.JvmType
 
 class ItemsFragment : BaseFragment() {
     private val TODO_REQUEST = 1
@@ -94,7 +93,7 @@ class ItemsFragment : BaseFragment() {
 
     private fun animate(button: FloatingActionButton, expand: Boolean = true) {
        val animation1 = ObjectAnimator.ofFloat(button, "scaleX",
-               if (expand) { 1.5f} else { 1.0f})
+               if (expand) { 1.5f } else { 1.0f})
         animation1.duration = 2000
         animation1.interpolator = BounceInterpolator()
 
@@ -117,5 +116,14 @@ class ItemsFragment : BaseFragment() {
         super.onResume()
         val btn = view?.findViewById<FloatingActionButton>(R.id.new_item)
         btn?.let { animate(btn, false) }
+
+        val items = view?.findViewById<ListView>(R.id.items)
+        items?.let {
+            items.postDelayed({
+                if (!activity!!.isFinishing) {
+                    items.setBackgroundColor(ContextCompat.getColor(context!!, R.color.grey_text_middle))
+                }
+            }, 3000)
+        }
     }
 }
