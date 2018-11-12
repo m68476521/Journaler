@@ -1,5 +1,6 @@
 package com.m68476521.mike.journaler
 
+import android.content.Intent
 import android.location.Location
 import android.location.LocationListener
 import android.os.*
@@ -8,10 +9,10 @@ import android.text.Editable
 import android.text.TextUtils
 import android.text.TextWatcher
 import android.util.Log
-import com.m68476521.mike.journaler.database.Db
 import com.m68476521.mike.journaler.execution.TaskExecutor
 import com.m68476521.mike.journaler.location.LocationProvider
 import com.m68476521.mike.journaler.model.Note
+import com.m68476521.mike.journaler.service.DatabaseService
 import kotlinx.android.synthetic.main.activity_note.*
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.ThreadPoolExecutor
@@ -83,19 +84,11 @@ class NoteActivity : ItemActivity() {
                 val title = getNoteTitle()
                 val content = getNoteContent()
                 note = Note(title, content, p0)
-                executor.execute {
-                    val param = note
-                    var result = false
-                    param?.let {
-                        result = Db.insert(param)
-                    }
-                    if (result) {
-                        Log.i(tag, "note inserted")
-                    } else {
-                        Log.e(tag, "note not inserted")
-                    }
-                    sendMessage(result)
-                }
+                val dbIntent = Intent(this@NoteActivity, DatabaseService::class.java)
+                dbIntent.putExtra(DatabaseService.EXTRA_ENTRY, note)
+                dbIntent.putExtra(DatabaseService.EXTRA_OPERATOR, MODE.CREATE.mode)
+                startService(dbIntent)
+                sendMessage(true)
             }
         }
 
@@ -135,19 +128,11 @@ class NoteActivity : ItemActivity() {
         } else {
             note?.title = getNoteTitle()
             note?.message = getNoteContent()
-            executor.execute {
-                val param = note
-                var result = true
-                param?.let {
-                    result = Db.update(param)
-                }
-                if (result) {
-                    Log.i(tag, "Note updated.")
-                } else {
-                    Log.e(tag, "Note not updated.")
-                }
-                sendMessage(result)
-            }
+            val dbIntent = Intent(this@NoteActivity, DatabaseService::class.java)
+            dbIntent.putExtra(DatabaseService.EXTRA_ENTRY, note)
+            dbIntent.putExtra(DatabaseService.EXTRA_OPERATOR, MODE.EDIT.mode)
+            startService(dbIntent)
+            sendMessage(true)
         }
     }
 
