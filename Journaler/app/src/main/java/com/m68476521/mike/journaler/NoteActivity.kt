@@ -1,6 +1,9 @@
 package com.m68476521.mike.journaler
 
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.location.Location
 import android.location.LocationListener
 import android.os.*
@@ -9,6 +12,7 @@ import android.text.Editable
 import android.text.TextUtils
 import android.text.TextWatcher
 import android.util.Log
+import com.m68476521.mike.journaler.database.Crud
 import com.m68476521.mike.journaler.execution.TaskExecutor
 import com.m68476521.mike.journaler.location.LocationProvider
 import com.m68476521.mike.journaler.model.Note
@@ -104,6 +108,15 @@ class NoteActivity : ItemActivity() {
         }
     }
 
+    private val crudOperationListener = object : BroadcastReceiver() {
+        override fun onReceive(p0: Context?, p1: Intent?) {
+            intent?.let {
+                val crudResultValue = intent.getIntExtra(MODE.EXTRAS_KEY, 0)
+                sendMessage(crudResultValue == 1)
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         note_title.addTextChangedListener(textWatcher)
@@ -120,6 +133,8 @@ class NoteActivity : ItemActivity() {
                 super.handleMessage(msg)
             }
         }
+        val intentFilter = IntentFilter(Crud.BROADCAST_ACTION)
+        registerReceiver(crudOperationListener, intentFilter)
     }
 
     fun updateNote() {
@@ -136,15 +151,12 @@ class NoteActivity : ItemActivity() {
         }
     }
 
-    fun getNoteContent(): String {
-        return note_content.text.toString()
-    }
+    fun getNoteContent(): String = note_content.text.toString()
 
-    fun getNoteTitle(): String {
-        return note_title.text.toString()
-    }
+    fun getNoteTitle(): String = note_title.text.toString()
 
     fun sendMessage(result: Boolean) {
+        Log.v(tag, "Crud operation result [ $result ]")
         val msg = handler?.obtainMessage()
         if (result)
             msg?.arg1 = 1
