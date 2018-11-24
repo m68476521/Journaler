@@ -3,6 +3,8 @@ package com.m68476521.mike.journaler.database
 import android.content.ContentValues
 import android.location.Location
 import android.util.Log
+import com.github.salomonbrys.kotson.fromJson
+import com.google.gson.Gson
 import com.m68476521.mike.journaler.model.Entry
 import com.m68476521.mike.journaler.model.Note
 import com.m68476521.mike.journaler.model.Todo
@@ -12,6 +14,7 @@ object Db : Crud<DbModel> {
     private val tag = "Db"
     private val version = 1
     private val name = "studends"
+    private val gson = Gson()
 
     override fun insert(what: DbModel): Boolean {
         return insert(listOf(what))
@@ -28,7 +31,7 @@ object Db : Crud<DbModel> {
                     val values = ContentValues()
                     values.put(DbHelper.COLUMN_TITLE, item.title)
                     values.put(DbHelper.COLUMN_MESSAGE, item.message)
-                    values.put(DbHelper.COLUMN_LOCATION_LATITUDE, item.location.latitude)
+                    values.put(DbHelper.COLUMN_LOCATION, gson.toJson(item.location))
                     when (item) {
                         is Note -> {
                             table = DbHelper.TABLE_NOTES
@@ -73,8 +76,7 @@ object Db : Crud<DbModel> {
                     val values = ContentValues()
                     values.put(DbHelper.COLUMN_TITLE, item.title)
                     values.put(DbHelper.COLUMN_MESSAGE, item.message)
-                    values.put(DbHelper.COLUMN_LOCATION_LATITUDE, item.location.latitude)
-                    values.put(DbHelper.COLUMN_LOCATION_LONGITUDE, item.location.longitude)
+                    values.put(DbHelper.COLUMN_LOCATION, gson.toJson(item.location))
                     when (item) {
                         is Note -> table = DbHelper.TABLE_NOTES
                         is Todo -> {
@@ -169,13 +171,9 @@ object Db : Crud<DbModel> {
                 val title = cursor.getString(titleIdx)
                 val messageIdx = cursor.getColumnIndexOrThrow(DbHelper.COLUMN_MESSAGE)
                 val message = cursor.getString(messageIdx)
-                val latitudeIdx = cursor.getColumnIndexOrThrow(DbHelper.COLUMN_LOCATION_LATITUDE)
-                val latitude = cursor.getDouble(latitudeIdx)
-                val longitudeIdx = cursor.getColumnIndexOrThrow(DbHelper.COLUMN_LOCATION_LONGITUDE)
-                val longitude = cursor.getDouble(longitudeIdx)
-                val location = Location("")
-                location.latitude = latitude
-                location.longitude = longitude
+                val locationIdx = cursor.getColumnIndexOrThrow(DbHelper.COLUMN_LOCATION)
+                val locationJson = cursor.getString(locationIdx)
+                val location = gson.fromJson<Location>(locationJson)
                 val note = Note(title, message, location)
                 note.id = id
                 result.add(note)
@@ -199,15 +197,11 @@ object Db : Crud<DbModel> {
                 val title = cursor.getString(titleIdx)
                 val messageIdx = cursor.getColumnIndexOrThrow(DbHelper.COLUMN_MESSAGE)
                 val message = cursor.getString(messageIdx)
-                val latitudeIdx = cursor.getColumnIndexOrThrow(DbHelper.COLUMN_LOCATION_LATITUDE)
-                val latitude = cursor.getDouble(latitudeIdx)
-                val longitudeIdx = cursor.getColumnIndexOrThrow(DbHelper.COLUMN_LOCATION_LONGITUDE)
-                val longitude = cursor.getDouble(longitudeIdx)
-                val location = Location("")
+                val locationIdx = cursor.getColumnIndexOrThrow(DbHelper.COLUMN_LOCATION)
+                val locationJson = cursor.getString(locationIdx)
+                val location = gson.fromJson<Location>(locationJson)
                 val scheduledForIdx = cursor.getColumnIndexOrThrow(DbHelper.COLUMN_SCHEDULED)
                 val scheduledFor = cursor.getLong(scheduledForIdx)
-                location.latitude = latitude
-                location.longitude = longitude
                 val todo = Todo(title, message, location, scheduledFor)
                 todo.id = id
                 result.add(todo)

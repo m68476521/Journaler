@@ -5,7 +5,7 @@ import android.database.sqlite.SQLiteOpenHelper
 import android.util.Log
 import com.m68476521.mike.journaler.MainActivity
 
-class DbHelper(val dbname: String, var version: Int) : SQLiteOpenHelper(MainActivity.ctx, dbname, null, version) {
+class DbHelper(dbname: String, var version: Int) : SQLiteOpenHelper(MainActivity.ctx, dbname, null, version) {
     companion object {
         val ID: String = "_id"
         val TABLE_TODOS = "todos"
@@ -13,8 +13,7 @@ class DbHelper(val dbname: String, var version: Int) : SQLiteOpenHelper(MainActi
         val COLUMN_TITLE: String = "title"
         val COLUMN_MESSAGE: String = "message"
         val COLUMN_SCHEDULED: String = "scheduled"
-        val COLUMN_LOCATION_LATITUDE: String = "latitude"
-        val COLUMN_LOCATION_LONGITUDE: String = "longitude"
+        val COLUMN_LOCATION: String = "location"
     }
 
     private val tag = "DbHelper"
@@ -24,8 +23,7 @@ class DbHelper(val dbname: String, var version: Int) : SQLiteOpenHelper(MainActi
         ($ID integer PRIMARY KEY autoincrement,
         $COLUMN_TITLE text,
         $COLUMN_MESSAGE text,
-        $COLUMN_LOCATION_LATITUDE real,
-        $COLUMN_LOCATION_LONGITUDE real
+        $COLUMN_LOCATION text
         )
         """
 
@@ -35,8 +33,7 @@ class DbHelper(val dbname: String, var version: Int) : SQLiteOpenHelper(MainActi
         $COLUMN_TITLE text,
         $COLUMN_MESSAGE text,
         $COLUMN_SCHEDULED integer,
-        $COLUMN_LOCATION_LATITUDE real,
-        $COLUMN_LOCATION_LONGITUDE real
+        $COLUMN_LOCATION text,
         )
         """
 
