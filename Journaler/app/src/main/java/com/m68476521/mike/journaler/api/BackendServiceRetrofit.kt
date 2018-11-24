@@ -11,7 +11,8 @@ object BackendServiceRetrofit {
         val logginInterceptor = HttpLoggingInterceptor()
         logginInterceptor.level = HttpLoggingInterceptor.Level.BODY
         return Retrofit.Builder()
-                .baseUrl("http://127.0.0.1")
+//                .baseUrl("http://127.0.0.1")
+                .baseUrl("http://static.milosvasic.net/jsons/journaler/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(OkHttpClient.Builder()
                         .addInterceptor(logginInterceptor)
