@@ -4,8 +4,8 @@ import android.app.IntentService
 import android.content.Intent
 import android.util.Log
 import com.m68476521.mike.journaler.MODE
+import com.m68476521.mike.journaler.database.Content
 import com.m68476521.mike.journaler.database.Crud
-import com.m68476521.mike.journaler.database.Db
 import com.m68476521.mike.journaler.model.Note
 
 class DatabaseService : IntentService("DatabaseService") {
@@ -38,7 +38,7 @@ class DatabaseService : IntentService("DatabaseService") {
                 val operation = p0.getIntExtra(EXTRA_OPERATOR, -1)
                 when (operation) {
                     MODE.CREATE.mode -> {
-                        val result = Db.insert(note)
+                        val result = Content.insert(note)
                         if (result)
                             Log.i(tag, "Note inserted")
                         else
@@ -46,7 +46,7 @@ class DatabaseService : IntentService("DatabaseService") {
                         broadcastResult(result)
                     }
                     MODE.EDIT.mode -> {
-                        val result = Db.update(note)
+                        val result = Content.update(note)
                         if (result)
                             Log.i(tag, "note updated")
                         else

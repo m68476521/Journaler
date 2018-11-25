@@ -1,13 +1,15 @@
 package com.m68476521.mike.journaler.service
 
 import android.app.Service
-
 import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
 import android.util.Log
-import com.m68476521.mike.journaler.api.*
-import com.m68476521.mike.journaler.database.Db
+import com.m68476521.mike.journaler.api.BackendServiceHeaderMap
+import com.m68476521.mike.journaler.api.JournalerBackendService
+import com.m68476521.mike.journaler.api.TokenManager
+import com.m68476521.mike.journaler.api.UserLoginRequest
+import com.m68476521.mike.journaler.database.Content
 import com.m68476521.mike.journaler.execution.TaskExecutor
 import com.m68476521.mike.journaler.model.Note
 import com.m68476521.mike.journaler.model.Todo
@@ -87,7 +89,7 @@ class MainService : Service(), DataSynchronization {
                         response?.let {
                             if (response.isSuccessful) {
                                 val notes = response.body()
-                                notes?.let { Db.insert(notes) }
+                                notes?.let { Content.insert(notes) }
                             }
                         }
                     }
@@ -107,7 +109,7 @@ class MainService : Service(), DataSynchronization {
                             if (response.isSuccessful) {
                                 val todos = response.body()
                                 todos?.let {
-                                    Db.insert(todos)
+                                    Content.insert(todos)
                                 }
                             }
                         }

@@ -42,6 +42,10 @@
             <!--</intent-filter>-->
         </activity>
 
+        <provider
+            android:authorities="com.m68476521.mike.journaler.provider.JournalerProvider"
+            android:name=".provider.JournalerProvider" />
+
         <service android:name=".service.MainService"
             android:exported="false"
             />
