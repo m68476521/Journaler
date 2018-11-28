@@ -3,6 +3,7 @@ package com.m68476521.mike.journaler.database
 import android.content.ContentValues
 import android.location.Location
 import android.net.Uri
+import android.util.Log
 import com.github.salomonbrys.kotson.fromJson
 import com.google.gson.Gson
 import com.m68476521.mike.journaler.Journaler
@@ -10,18 +11,19 @@ import com.m68476521.mike.journaler.model.Entry
 import com.m68476521.mike.journaler.model.Note
 import com.m68476521.mike.journaler.model.Todo
 import com.m68476521.mike.journaler.provider.JournalerProvider
+import java.lang.Exception
 import java.lang.IllegalArgumentException
 import java.lang.StringBuilder
 import kotlin.reflect.KClass
 
 object Content : Crud<DbModel> {
     private val gson = Gson()
+    private val tag = "Content"
 
-    override fun insert(what: DbModel): Boolean {
-        return insert(listOf(what))
-    }
+    override fun insert(what: DbModel): Long = insert(listOf(what))
 
-    override fun insert(what: Collection<DbModel>): Boolean {
+
+    override fun insert(what: Collection<DbModel>): Long {
         what.forEach { item ->
             when (item) {
                 is Entry -> {
@@ -42,20 +44,27 @@ object Content : Crud<DbModel> {
                     }
                     val ctx = Journaler.context
                     ctx?.let {
-                        return ctx.contentResolver.insert(uri, values) != null
+                        val result = ctx.contentResolver.insert(uri, values)
+                        result?.let{
+                            try {
+                                item.id = result.lastPathSegment.toLong()
+                                return item.id
+                            } catch (e: Exception) {
+                                Log.e(tag, "Error: [ $e ]")
+                            }
+                        }
                     }
                 }
                 else -> throw IllegalArgumentException("Unsupported db model [ $item ]")
             }
         }
-        return false
+        return 0
     }
 
-    override fun update(what: DbModel): Boolean {
-        return update(listOf(what))
-    }
+    override fun update(what: DbModel): Long = update(listOf(what))
 
-    override fun update(what: Collection<DbModel>): Boolean {
+
+    override fun update(what: Collection<DbModel>): Long {
         what.forEach { item ->
             when (item) {
                 is Entry -> {
@@ -76,20 +85,19 @@ object Content : Crud<DbModel> {
                     }
                     val ctx = Journaler.context
                     ctx?.let {
-                        return ctx.contentResolver.update(uri, values, "_id = ?", arrayOf(item.id.toString())) > 0
+                        return ctx.contentResolver.update(uri, values, "_id = ?", arrayOf(item.id.toString())).toLong()
                     }
                 }
                 else -> throw IllegalArgumentException("Unsupported db model [ $item ]")
             }
         }
-        return false
+        return 0
     }
 
-    override fun delete(what: DbModel): Boolean {
-        return delete(listOf(what))
-    }
+    override fun delete(what: DbModel): Long = delete(listOf(what))
 
-    override fun delete(what: Collection<DbModel>): Boolean {
+
+    override fun delete(what: Collection<DbModel>): Long {
         what.forEach { item ->
             when (item) {
                 is Entry -> {
@@ -105,18 +113,18 @@ object Content : Crud<DbModel> {
                     }
                     val ctx = Journaler.context
                     ctx?.let {
-                        return ctx.contentResolver.delete(uri, "_id = ?", arrayOf(item.id.toString())) > 0
+                        return ctx.contentResolver.delete(uri, "_id = ?", arrayOf(item.id.toString())).toLong()
                     }
                 }
                 else -> throw  IllegalArgumentException("Unsupported db model: [ $item ]")
             }
         }
-        return false
+        return 0
     }
 
-    override fun select(args: Pair<String, String>, clazz: KClass<DbModel>): List<DbModel> {
-        return select(listOf(args), clazz)
-    }
+    override fun select(args: Pair<String, String>, clazz: KClass<DbModel>): List<DbModel> =
+        select(listOf(args), clazz)
+
 
     override fun select(args: Collection<Pair<String, String>>, clazz: KClass<DbModel>): List<DbModel> {
         val selection = StringBuilder()

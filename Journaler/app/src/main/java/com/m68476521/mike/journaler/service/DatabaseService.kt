@@ -7,6 +7,7 @@ import com.m68476521.mike.journaler.MODE
 import com.m68476521.mike.journaler.database.Content
 import com.m68476521.mike.journaler.database.Crud
 import com.m68476521.mike.journaler.model.Note
+import java.lang.Exception
 
 class DatabaseService : IntentService("DatabaseService") {
     companion object {
@@ -39,18 +40,26 @@ class DatabaseService : IntentService("DatabaseService") {
                 when (operation) {
                     MODE.CREATE.mode -> {
                         val result = Content.insert(note)
-                        if (result)
+                        if (result > 0)
                             Log.i(tag, "Note inserted")
                         else
                             Log.e(tag, "Note not inserted")
                         broadcastResult(result)
                     }
                     MODE.EDIT.mode -> {
-                        val result = Content.update(note)
-                        if (result)
-                            Log.i(tag, "note updated")
-                        else
-                            Log.e(tag, "Note not updated")
+                        var result : Long = 0
+                        try {
+                            result = Content.update(note)
+                        } catch (e: Exception) {
+                            Log.e(tag, "Error: [ $e ]")
+                        }
+
+                        if (result > 0) {
+                            Log.i(tag, "Note updated.")
+                        } else {
+                            Log.e(tag, "Note not updated.")
+                        }
+
                         broadcastResult(result)
                     }
                     else -> Log.w(tag, "Unknown mode [ $operation ]")
@@ -59,13 +68,9 @@ class DatabaseService : IntentService("DatabaseService") {
         }
     }
 
-    private fun broadcastResult(result: Boolean) {
-        val intent = Intent()
-        intent.putExtra(Crud.BROADCAST_EXTRAS_KEY_CRUD_OPERATION_RESULT,
-                if (result)
-                    1
-                else
-                    0
-        )
+    private fun broadcastResult(result: Long) {
+        val intent = Intent(Crud.BROADCAST_ACTION)
+        intent.putExtra(Crud.BROADCAST_EXTRAS_KEY_CRUD_OPERATION_RESULT, result)
+        sendBroadcast(intent)
     }
 }
