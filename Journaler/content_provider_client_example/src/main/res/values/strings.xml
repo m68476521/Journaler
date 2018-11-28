@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">content_provider_client_example</string>
+    <string name="select">Select data</string>
+    <string name="insert">Insert data</string>
+    <string name="update_data">Update data</string>
+    <string name="delete">Delete data</string>
+</resources>
