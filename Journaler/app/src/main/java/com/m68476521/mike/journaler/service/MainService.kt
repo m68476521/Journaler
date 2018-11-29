@@ -89,7 +89,7 @@ class MainService : Service(), DataSynchronization {
                         response?.let {
                             if (response.isSuccessful) {
                                 val notes = response.body()
-                                notes?.let { Content.insert(notes) }
+                                notes?.let { Content.NOTE.insert(notes) }
                             }
                         }
                     }
@@ -109,7 +109,7 @@ class MainService : Service(), DataSynchronization {
                             if (response.isSuccessful) {
                                 val todos = response.body()
                                 todos?.let {
-                                    Content.insert(todos)
+                                    Content.TODO.insert(todos)
                                 }
                             }
                         }

@@ -15,6 +15,9 @@ import android.view.ViewGroup
 import android.view.animation.AccelerateInterpolator
 import android.view.animation.BounceInterpolator
 import android.widget.ListView
+import com.m68476521.mike.journaler.adapter.EntryAdapter
+import com.m68476521.mike.journaler.database.Content
+import com.m68476521.mike.journaler.execution.TaskExecutor
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -22,6 +25,8 @@ class ItemsFragment : BaseFragment() {
     private val TODO_REQUEST = 1
     private val NOTE_REQUEST = 0
     override val logTag = "Items fragment"
+    private val executor = TaskExecutor.getInstance(5)
+
     override fun getLayout() = R.layout.fragment_items
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -116,6 +121,14 @@ class ItemsFragment : BaseFragment() {
         super.onResume()
         val btn = view?.findViewById<FloatingActionButton>(R.id.new_item)
         btn?.let { animate(btn, false) }
+
+        executor.execute {
+            val notes = Content.NOTE.selectAll()
+            val adapter = EntryAdapter(this.activity!!, notes)
+            activity?.runOnUiThread {
+                view?.findViewById<ListView>(R.id.items)?.adapter = adapter
+            }
+        }
 
         val items = view?.findViewById<ListView>(R.id.items)
         items?.let {

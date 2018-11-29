@@ -39,17 +39,17 @@ class DatabaseService : IntentService("DatabaseService") {
                 val operation = p0.getIntExtra(EXTRA_OPERATOR, -1)
                 when (operation) {
                     MODE.CREATE.mode -> {
-                        val result = Content.insert(note)
+                        val result = Content.NOTE.insert(note)
                         if (result > 0)
                             Log.i(tag, "Note inserted")
                         else
                             Log.e(tag, "Note not inserted")
-                        broadcastResult(result)
+                        broadcastId(result)
                     }
                     MODE.EDIT.mode -> {
-                        var result : Long = 0
+                        var result  = 0
                         try {
-                            result = Content.update(note)
+                            result = Content.NOTE.update(note)
                         } catch (e: Exception) {
                             Log.e(tag, "Error: [ $e ]")
                         }
@@ -59,8 +59,6 @@ class DatabaseService : IntentService("DatabaseService") {
                         } else {
                             Log.e(tag, "Note not updated.")
                         }
-
-                        broadcastResult(result)
                     }
                     else -> Log.w(tag, "Unknown mode [ $operation ]")
                 }
@@ -68,9 +66,9 @@ class DatabaseService : IntentService("DatabaseService") {
         }
     }
 
-    private fun broadcastResult(result: Long) {
+    private fun broadcastId(id: Long) {
         val intent = Intent(Crud.BROADCAST_ACTION)
-        intent.putExtra(Crud.BROADCAST_EXTRAS_KEY_CRUD_OPERATION_RESULT, result)
+        intent.putExtra(Crud.BROADCAST_EXTRAS_KEY_CRUD_OPERATION_RESULT, id)
         sendBroadcast(intent)
     }
 }
