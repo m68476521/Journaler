@@ -108,7 +108,7 @@ abstract class BaseActivity : PermissionCompatActivity() {
         super.onResume()
         Log.v(tag, "[ ON RESUME ]")
         val animation = getAnimation(R.anim.top_to_bottom)
-//        findViewById(R.id.toolbar).startAnimation(animation)
+        findViewById<View>(R.id.toolbar).startAnimation(animation)
     }
 
     override fun onPostResume() {
@@ -120,7 +120,7 @@ abstract class BaseActivity : PermissionCompatActivity() {
         super.onPause()
         Log.v(tag, "[ ON PAUSE]")
         val animation = getAnimation(R.anim.hide_to_top)
-//        findViewById(R.id.toolbar).startAnimation(animation)
+        findViewById<View>(R.id.toolbar).startAnimation(animation)
     }
 
     override fun onStop() {
@@ -133,11 +133,11 @@ abstract class BaseActivity : PermissionCompatActivity() {
         Log.v(tag, "[ ON DESTROY ]")
     }
 
-    protected fun applyFonts() {
+    private fun applyFonts() {
         initFonts()
         Log.v(tag, "Applying fonts [ START ]")
-//        val rootView = findViewById(android.R.id.content)
-//        applyFonts(rootView, this)
+        val rootView = findViewById<View>(android.R.id.content)
+        applyFonts(rootView, this)
         Log.v(tag, "Applying fonts [ END ]")
     }
 

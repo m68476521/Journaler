@@ -7,7 +7,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
 object BackendServiceRetrofit {
-    fun obtain(readTimeoutInSeconds: Long = 1, connectTimeooutInSeconds: Long = 1): Retrofit {
+    fun obtain(readTimeoutInSeconds: Long = 30, connectTimeoutInSeconds: Long = 30): Retrofit {
         val logginInterceptor = HttpLoggingInterceptor()
         logginInterceptor.level = HttpLoggingInterceptor.Level.BODY
         return Retrofit.Builder()
@@ -17,7 +17,7 @@ object BackendServiceRetrofit {
                 .client(OkHttpClient.Builder()
                         .addInterceptor(logginInterceptor)
                         .readTimeout(readTimeoutInSeconds, TimeUnit.SECONDS)
-                        .connectTimeout(connectTimeooutInSeconds, TimeUnit.SECONDS)
+                        .connectTimeout(connectTimeoutInSeconds, TimeUnit.SECONDS)
                         .build())
                 .build()
     }

@@ -58,13 +58,51 @@ class MainActivity : AppCompatActivity() {
                         location.latitude = x.toDouble()
                         location.longitude = x.toDouble()
                         values.put("location", gson.toJson(location))
-                        contentResolver.insert(uri, values)
+                        if (contentResolver.insert(uri, values) != null) {
+                            Log.v(tag, "Note inserted [ $x ]")
+                        } else {
+                            Log.e(tag, "Note not inserted [ $x ]")
+                        }
                     }
                 }
             }
             task.execute()
         }
         update.setOnClickListener {
+            val task = object : AsyncTask<Unit, Unit, Unit>() {
+                override fun doInBackground(vararg p0: Unit?) {
+                    val selection = StringBuilder()
+                    val selectionArgs = mutableListOf<String>()
+                    val uri = Uri.parse("content://com.journaler.provider/notes")
+                    val cursor = contentResolver.query(uri, null, selection.toString(),
+                            selectionArgs.toTypedArray(), null)
+
+                    while (cursor.moveToNext()) {
+                        val values = ContentValues()
+                        val id = cursor.getLong(cursor.getColumnIndexOrThrow("_id"))
+                        val titleIdx = cursor.getColumnIndexOrThrow("title")
+                        val title = "${cursor.getString(titleIdx)} upd: ${System.currentTimeMillis()}"
+                        val messageIdx = cursor.getColumnIndexOrThrow("message")
+                        val message = "${cursor.getString(messageIdx)} upd: ${System.currentTimeMillis()}"
+                        val locationIdx = cursor.getColumnIndexOrThrow("location")
+                        val locationJson = cursor.getString(locationIdx)
+                        values.put("_id", id)
+                        values.put("title", title)
+                        values.put("message", message)
+                        values.put("location", locationJson)
+
+                        val updated = contentResolver.update(uri, values, "_id = ?", arrayOf(id.toString()))
+
+                        if (updated > 0) {
+                            Log.v(tag, "Notes updated [ $updated ]")
+                        } else {
+                            Log.e(tag, "Notes not updated")
+                        }
+                    }
+                    cursor.close()
+                }
+            }
+            task.execute()
         }
         delete.setOnClickListener {
         }
