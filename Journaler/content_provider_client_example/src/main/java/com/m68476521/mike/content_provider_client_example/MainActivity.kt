@@ -105,6 +105,26 @@ class MainActivity : AppCompatActivity() {
             task.execute()
         }
         delete.setOnClickListener {
+            val task = object : AsyncTask<Unit, Unit, Unit>() {
+                override fun doInBackground(vararg p0: Unit?) {
+                    val selection = StringBuilder()
+                    val selectionArgs = mutableListOf<String>()
+                    val uri = Uri.parse("content://com.journaler.provide/notes")
+                    val cursor = contentResolver.query(uri, null, selection.toString(),
+                            selectionArgs.toTypedArray(), null)
+                    while (cursor.moveToNext()) {
+                        val id = cursor.getLong(cursor.getColumnIndexOrThrow("_id"))
+                        val deleted = contentResolver.delete(uri, "_id = ?", arrayOf(id.toString()))
+                        if (deleted > 0) {
+                            Log.v(tag, "Notes deleted [ $deleted ]")
+                        } else {
+                            Log.e(tag, "Notes not deleted")
+                        }
+                    }
+                    cursor.close()
+                }
+            }
+            task.execute()
         }
     }
 }
