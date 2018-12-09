@@ -9,6 +9,7 @@ repositories {
 }
 
 android {
+    flavorDimensions "default"
     compileSdkVersion 28
     defaultConfig {
         applicationId "com.m68476521.mike.journaler"
@@ -25,8 +26,57 @@ android {
         }
     }
 
+    sourceSets {
+        main.java.srcDirs += [
+                'src/main/kotlin',
+                'src/common/kotlin',
+                'src/debug/kotlin',
+                'src/release/kotlin',
+                'src/staging/kotlin',
+                'src/preproduction/kotlin',
+                'src/debug/java',
+                'src/release/java',
+                'src/staging/java',
+                'src/preproduction/java',
+                'src/testDebug/java',
+                'src/testDebug/kotlin',
+                'src/androidTestDebug/java',
+                'src/androidTestDebug/kotlin'
+        ]
+    }
+    buildTypes {
+        debug {
+            applicationIdSuffix ".dev"
+        }
+        staging {
+            debuggable true
+            applicationIdSuffix ".sta"
+        }
+        preproduction {
+            applicationIdSuffix ".pre"
+        }
+        release {}
+    }
+
     dataBinding {
         enabled = true
+    }
+    productFlavors {
+        demo {
+            applicationIdSuffix ".demo"
+            versionNameSuffix "-demo"
+        }
+        complete {
+            applicationIdSuffix ".complete"
+            versionNameSuffix "-complete"
+        }
+        special {
+            applicationIdSuffix ".special"
+            versionNameSuffix "-special"
+        }
+    }
+    testOptions {
+        unitTests.returnDefaultValues = true
     }
 }
 
@@ -48,4 +98,25 @@ dependencies {
     implementation 'com.squareup.okhttp3:logging-interceptor:3.10.0'
     implementation 'com.github.salomonbrys.kotson:kotson:2.3.0'
     kapt 'com.android.databinding:compiler:2.3.1'
+
+    implementation "com.google.code.gson:gson:2.8.0"
+    implementation "com.github.salomonbrys.kotson:kotson:2.3.0"
+    implementation "com.squareup.retrofit2:retrofit:2.3.0"
+    implementation "com.squareup.retrofit2:converter-gson:2.0.2"
+    implementation "com.squareup.okhttp3:okhttp:3.9.0"
+    implementation "com.squareup.okhttp3:logging-interceptor:3.9.0"
+    implementation "junit:junit:4.12"
+    testImplementation "junit:junit:4.12"
+    testImplementation "org.jetbrains.kotlin:kotlin-reflect:1.1.51"
+    testImplementation "org.jetbrains.kotlin:kotlin-stdlib:1.1.51"
+    implementation "org.jetbrains.kotlin:kotlin-test:1.1.51"
+    testImplementation "org.jetbrains.kotlin:kotlin-test:1.1.51"
+    implementation "org.jetbrains.kotlin:kotlin-test-junit:1.1.51"
+    testImplementation "org.jetbrains.kotlin:kotlin-test-junit:1.1.51"
+    implementation 'com.android.support:support-annotations:26.0.1'
+    androidTestImplementation 'com.android.support:support-annotations:26.0.1'
+    implementation 'com.android.support.test:runner:0.5'
+    androidTestImplementation 'com.android.support.test:runner:0.5'
+    implementation 'com.android.support.test:rules:0.5'
+    androidTestImplementation 'com.android.support.test:rules:0.5'
 }
